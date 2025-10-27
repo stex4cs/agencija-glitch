@@ -1,26 +1,110 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Tailwind v4 - Custom design tokens (theme configuration) */
+@theme {
+  /* Custom colors */
+  --color-glitch-bg: #0a0a0b;
+  --color-glitch-fg: #f6f7fb;
+  --color-glitch-primary: #8b5cf6;
+  --color-glitch-accent: #00e5ff;
+
+  /* Custom box shadows */
+  --shadow-glow: 0 0 40px rgba(0,229,255,.15), 0 0 80px rgba(139,92,246,.15);
+
+  /* Custom font families */
+  --font-family-display: Inter, ui-sans-serif, system-ui;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Custom CSS za 3D efekte (bivši <style jsx>) */
+.grid-bg {
+  background: linear-gradient(90deg, rgb(10 10 10) 0%, rgb(26 33 32) 60%);
+  -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,1), rgba(0,0,0,.6));
+  mask-image: linear-gradient(180deg, rgba(0,0,0,1), rgba(0,0,0,.6));
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+.grid-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(transparent 0, rgba(0,0,0,.05) 1px),
+    linear-gradient(90deg, transparent 0, rgba(0,0,0,.05) 1px);
+  background-size: 80px 80px, 80px 80px;
+  transform: translateZ(-300px) rotateX(12deg) scale(1.6);
+  opacity: .7;
+  pointer-events: none;
+}
+
+.stacked-layers {
+  position: absolute;
+  inset: -8px;
+  border-radius: 12px;
+  filter: blur(6px) saturate(80%);
+  background: linear-gradient(180deg, rgba(20,30,30,.6), rgba(10,12,12,.6));
+  transform: translateY(calc(var(--my, 0) * 1px)) translateX(calc(var(--mx, 0) * 1px)) rotateX(8deg);
+  box-shadow: 0 20px 60px rgba(0,0,0,.7);
+  z-index: -1;
+}
+
+.card {
+  background: linear-gradient(180deg, rgba(12,16,16,.9), rgba(8,10,10,.75));
+  border: 1px solid rgba(255,255,255,.03);
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0,0,0,.6);
+  backdrop-filter: blur(6px) saturate(120%);
+  position: relative;
+}
+
+.card::before,
+.card::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  height: 100%;
+  border-radius: 12px;
+  z-index: -2;
+}
+
+.card::before {
+  top: 8px;
+  background: linear-gradient(180deg, rgba(0,0,0,.6), rgba(0,0,0,.7));
+  transform: translateZ(-60px) scale(.99);
+  filter: blur(3px);
+}
+
+.card::after {
+  top: 16px;
+  background: linear-gradient(180deg, rgba(6,10,10,.55), rgba(4,6,6,.55));
+  transform: translateZ(-120px) scale(.98);
+  filter: blur(6px);
+}
+
+.card-compact {
+  background: linear-gradient(180deg, rgba(12,18,18,.7), rgba(8,10,10,.6));
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.03);
+}
+
+@media (max-width: 768px) {
+  .grid-bg::before { 
+    background-size: 40px 40px, 40px 40px; 
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+
+
