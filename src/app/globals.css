@@ -106,5 +106,56 @@
   animation: fadeIn 0.3s ease-out;
 }
 
+/* Mobilne animacije - aktiviraj hover efekte na touch uređajima */
+@media (max-width: 768px) {
+  /* Prikaži background layer-e i efekte odmah na mobilnom */
+  .group .opacity-0.group-hover\:opacity-100,
+  .group .opacity-0.group-hover\:opacity-70,
+  .group .opacity-0.group-hover\:opacity-80,
+  .group .opacity-0.group-hover\:opacity-60 {
+    opacity: 0.3 !important;
+  }
 
+  /* Prikaži transform efekte odmah na mobilnom */
+  .group .group-hover\:-translate-y-2 {
+    transform: translateY(-4px) !important;
+  }
+
+  /* Omogući touch event da triggeruje hover stanja */
+  .group:active .opacity-0.group-hover\:opacity-100 {
+    opacity: 1 !important;
+  }
+
+  .group:active .opacity-0.group-hover\:opacity-70 {
+    opacity: 0.7 !important;
+  }
+
+  .group:active .opacity-0.group-hover\:opacity-80 {
+    opacity: 0.8 !important;
+  }
+
+  .group:active .opacity-0.group-hover\:opacity-60 {
+    opacity: 0.6 !important;
+  }
+
+  /* Scale animacije */
+  .group:active .group-hover\:scale-105,
+  .group:active .group-hover\:scale-110 {
+    transform: scale(1.05) !important;
+  }
+
+  /* Rotate animacije */
+  .group:active .group-hover\:rotate-6 {
+    transform: rotate(6deg) !important;
+  }
+
+  /* Translate animacije */
+  .group:active .group-hover\:translate-x-1 {
+    transform: translateX(0.25rem) !important;
+  }
+
+  .group:active .group-hover\:-translate-y-2 {
+    transform: translateY(-0.5rem) !important;
+  }
+}
 

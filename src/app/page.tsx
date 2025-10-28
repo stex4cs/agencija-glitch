@@ -6,9 +6,10 @@ import Image from "next/image";
 
 
 export default function Page() {
-  // Refs (mobilni meni)
+  // Refs (mobilni meni i video)
   const navBtnRef = useRef<HTMLButtonElement | null>(null);
   const navMenuRef = useRef<HTMLDivElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   // Godina u footeru (setujemo posle mount-a)
   const [year, setYear] = useState<number | null>(null);
@@ -186,6 +187,27 @@ const integrations = [
 
   // Footer year
   setYear(new Date().getFullYear());
+
+  // Force video playback na iOS
+  const video = videoRef.current;
+  if (video) {
+    // Pokušaj da pustiš video nakon što se učita
+    video.load();
+    const playPromise = video.play();
+
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {
+        // Ako autoplay ne uspe, pokušaj ponovo nakon interakcije
+        const playOnInteraction = () => {
+          video.play();
+          document.removeEventListener('touchstart', playOnInteraction);
+          document.removeEventListener('click', playOnInteraction);
+        };
+        document.addEventListener('touchstart', playOnInteraction);
+        document.addEventListener('click', playOnInteraction);
+      });
+    }
+  }
 
   return () => {
     btn?.removeEventListener('click', toggleMenu);
@@ -412,13 +434,18 @@ const integrations = [
   {/* Background video */}
   <div className="absolute inset-0 overflow-hidden">
     <video
+      ref={videoRef}
       autoPlay
       loop
       muted
       playsInline
+      preload="auto"
+      poster="/images/hero-image.webp"
       className="absolute inset-0 w-full h-full object-cover"
+      style={{ pointerEvents: 'none' }}
     >
-      <source src="/images/hero-video.webm" type="video/mp4" />
+      <source src="/images/hero-video.webm" type="video/webm" />
+      {/* Dodaj MP4 verziju za iOS kompatibilnost - konvertuj video u MP4 format */}
       Tvoj browser ne podržava video background.
     </video>
 
@@ -992,7 +1019,7 @@ const integrations = [
     </div>
 
     {/* Timeline - Desktop verzija */}
-    <div className="hidden lg:block max-w-6xl mx-auto mb-20">
+    <div className="max-w-6xl mx-auto mb-20">
       {/* Connecting line */}
       <div className="relative">
         <div className="absolute top-1/2 left-0 right-0 h-1 -translate-y-1/2">
@@ -1000,23 +1027,23 @@ const integrations = [
         </div>
         
         {/* Steps */}
-        <div className="relative grid grid-cols-3 gap-8">
+        <div className="relative grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-8">
           {/* Step 1 */}
-          <div className="reveal text-center pt-32">
+          <div className="reveal text-center pt-16 md:pt-32">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-black/80 border-4 border-glitch-accent shadow-[0_0_40px_rgba(0,229,255,0.4)] mb-6 backdrop-blur-sm">
               <span className="text-3xl font-bold text-glitch-accent">1</span>
             </div>
           </div>
 
           {/* Step 2 */}
-          <div className="reveal text-center pt-32" style={{ animationDelay: '200ms' }}>
+          <div className="reveal text-center pt-16 md:pt-32" style={{ animationDelay: '200ms' }}>
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-black/80 border-4 border-glitch-primary shadow-[0_0_40px_rgba(139,92,246,0.4)] mb-6 backdrop-blur-sm">
               <span className="text-3xl font-bold text-glitch-primary">2</span>
             </div>
           </div>
 
           {/* Step 3 */}
-          <div className="reveal text-center pt-32" style={{ animationDelay: '400ms' }}>
+          <div className="reveal text-center pt-16 md:pt-32" style={{ animationDelay: '400ms' }}>
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-black/80 border-4 border-green-400 shadow-[0_0_40px_rgba(16,185,129,0.4)] mb-6 backdrop-blur-sm">
               <span className="text-3xl font-bold text-green-400">3</span>
             </div>
@@ -1667,16 +1694,16 @@ const integrations = [
               </p>
             </div>
             
-            <form className="flex gap-3 w-full lg:w-auto lg:min-w-[400px]">
+            <form className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto lg:min-w-[400px]">
               <input
                 type="email"
                 placeholder="tvoj@email.com"
                 className="flex-1 px-4 py-3 rounded-xl bg-black/40 border border-white/20 focus:border-glitch-accent outline-none transition-colors placeholder:text-white/30"
                 required
               />
-              <button 
+              <button
                 type="submit"
-                className="px-6 py-3 rounded-xl bg-glitch-accent text-black font-bold hover:shadow-glow hover:scale-105 transition-all whitespace-nowrap"
+                className="px-6 py-3 rounded-xl bg-glitch-accent text-black font-bold hover:shadow-glow hover:scale-105 transition-all whitespace-nowrap w-full sm:w-auto"
               >
                 Subscribe
               </button>
