@@ -14,6 +14,11 @@ export default function Page() {
   // Godina u footeru (setujemo posle mount-a)
   const [year, setYear] = useState<number | null>(null);
 
+  // Newsletter state
+  const [newsletterEmail, setNewsletterEmail] = useState("");
+  const [newsletterStatus, setNewsletterStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [newsletterMessage, setNewsletterMessage] = useState("");
+
   // Data-URI "noise" pozadina (memo)
   const noiseBg = useMemo(
     () =>
@@ -70,6 +75,44 @@ const faqs = [
 
 
   const [selectedIntegration, setSelectedIntegration] = useState<string | null>(null);
+
+  // Newsletter submit handler
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    setNewsletterStatus("loading");
+    setNewsletterMessage("");
+
+    try {
+      const response = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: newsletterEmail }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setNewsletterStatus("success");
+        setNewsletterMessage(data.message || "Uspešno ste se prijavili!");
+        setNewsletterEmail(""); // Reset form
+      } else {
+        setNewsletterStatus("error");
+        setNewsletterMessage(data.error || "Došlo je do greške.");
+      }
+    } catch (error) {
+      setNewsletterStatus("error");
+      setNewsletterMessage("Došlo je do greške. Pokušajte ponovo.");
+    }
+
+    // Reset status nakon 5 sekundi
+    setTimeout(() => {
+      setNewsletterStatus("idle");
+      setNewsletterMessage("");
+    }, 5000);
+  };
 
 const integrations = [
   {
@@ -1694,20 +1737,35 @@ const integrations = [
               </p>
             </div>
             
-            <form className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto lg:min-w-[400px]">
+            <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto lg:min-w-[400px]">
               <input
                 type="email"
                 placeholder="tvoj@email.com"
+                value={newsletterEmail}
+                onChange={(e) => setNewsletterEmail(e.target.value)}
                 className="flex-1 px-4 py-3 rounded-xl bg-black/40 border border-white/20 focus:border-glitch-accent outline-none transition-colors placeholder:text-white/30"
                 required
+                disabled={newsletterStatus === "loading"}
               />
               <button
                 type="submit"
-                className="px-6 py-3 rounded-xl bg-glitch-accent text-black font-bold hover:shadow-glow hover:scale-105 transition-all whitespace-nowrap w-full sm:w-auto"
+                disabled={newsletterStatus === "loading"}
+                className="px-6 py-3 rounded-xl bg-glitch-accent text-black font-bold hover:shadow-glow hover:scale-105 transition-all whitespace-nowrap w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Subscribe
+                {newsletterStatus === "loading" ? "Šaljem..." : "Subscribe"}
               </button>
             </form>
+
+            {/* Status message */}
+            {newsletterMessage && (
+              <div className={`mt-4 p-3 rounded-lg text-sm ${
+                newsletterStatus === "success"
+                  ? "bg-green-500/10 border border-green-500/30 text-green-400"
+                  : "bg-red-500/10 border border-red-500/30 text-red-400"
+              }`}>
+                {newsletterMessage}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -1848,22 +1906,22 @@ const integrations = [
         </h4>
         <ul className="space-y-3">
           <li>
-            <a href="#" className="text-white/70 hover:text-glitch-accent transition-colors text-sm">
+            <a href="/privacy-policy" className="text-white/70 hover:text-glitch-accent transition-colors text-sm">
               Privacy Policy
             </a>
           </li>
           <li>
-            <a href="#" className="text-white/70 hover:text-glitch-accent transition-colors text-sm">
+            <a href="/terms-of-service" className="text-white/70 hover:text-glitch-accent transition-colors text-sm">
               Terms of Service
             </a>
           </li>
           <li>
-            <a href="#" className="text-white/70 hover:text-glitch-accent transition-colors text-sm">
+            <a href="/cookie-policy" className="text-white/70 hover:text-glitch-accent transition-colors text-sm">
               Cookie Policy
             </a>
           </li>
           <li>
-            <a href="#" className="text-white/70 hover:text-glitch-accent transition-colors text-sm">
+            <a href="/gdpr" className="text-white/70 hover:text-glitch-accent transition-colors text-sm">
               GDPR
             </a>
           </li>
